@@ -7,6 +7,6 @@ USE AT OWN RISK. THE CODE IN THIS REPOSITORY IS FOR **PERMANENTLY** DELETING FIL
 
 ### How to use
 1. Fork this
-2. Set your own secret `GH_PAT`
+2. Set your own "Personal Access Token" secret to `GH_PAT`
 3. Edit [.github/workflows/push.yml](.github/workflows/push.yml), replacing environment variables `target_repo`, `target_repo_branch`, `target_file_remove`
 4. Commit and github will do the rest!
