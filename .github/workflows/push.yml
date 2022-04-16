@@ -1,0 +1,33 @@
+name: docker-compose-actions-workflow
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      target_repo: github-permanently-delete-git-file-action
+      target_repo_branch: main
+      target_file_remove: go.sum
+      
+    steps:
+      - name: Checkout tools repo
+        uses: actions/checkout@v3
+        with:
+          repository: dirkarnez/${{ env.target_repo }}
+          token: ${{ secrets.GH_PAT }} 
+          path: ${{ env.target_repo }}
+          
+      - run:  curl https://repo1.maven.org/maven2/com/madgag/bfg/1.14.0/bfg-1.14.0.jar -L -O -J
+     
+      - uses: EndBug/add-and-commit@v9
+        with:
+          cwd: ${{ env.target_repo }}
+          remove: ${{ env.target_file_remove }}
+          message: '- remove files'                 # hardcode to avoid super long commit message
+          push: false
+          
+      - run: |
+          java -jar bfg-1.14.0.jar --delete-files "${{ env.target_file_remove }}" ${{ env.target_repo }}
+          
+      - run: cd ${{ env.target_repo }} && git reflog expire --expire=now --all && git gc --prune=now --aggressive
+      - run: cd ${{ env.target_repo }} && git push --force origin "${{ env.target_repo_branch }}"
